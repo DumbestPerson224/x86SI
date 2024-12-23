@@ -2,79 +2,115 @@ section .text
   global _start 
 
 section .data 
-   game_states:
-     db 0 ; Game paused
-     db 0 ; Game over
-     dw 1 ; Timer on
+     player:
+          db "Player 1's turn"
+          db "Player 2's turn"
+          db "" ; Player 1 input
+          db "" ; Player 2 input
 
-   messages:
-     ;48 + 12 = 60
-     db "Game Paused!" ; How many characters? 12 
-     db "Game over!"   ; How many characters? 10
-     db "Player 1, enter your name: "
-     db "Player 2, enter your name: "
-   player_input:
-     db "" ; Player 1's name
-     db "" ; Player 2's name
+     game_states:
+          db 1    ; Player's turn
+          db 0    ; Game over
+          
+     
+     questions:
+          db "How do you center a div in CSS?"
+          db "How do you create a header in HTML?" 
+     output_question: db 0 
+     newline: db 0x0A 
 
 _start:
-   
-   ; Check for a game over
-   cmp byte [game_states + 1], 1
-   je .game_over
+    cmp byte [game_states + 1], 1
+    je .exit 
 
-.output_start:
+.generate_turn:
+     ; 1 XOR 1 = 0
+     ; 0 XOR 1 = 1
+     xor byte [game_states], 1 
+     cmp byte [game_states], 1
+     jz .player2_turn
+
+.player1_turn:
      mov eax, 4
      mov ebx, 1
-     lea ecx, [messages + 22]
-     mov edx, 27
+     lea ecx, [player]
+     mov edx, 15
      int 0x80
-     jmp .handle_player1_input 
 
-.game_over:
-   mov eax, 4
-   mov ebx, 1
-   lea ecx, [messages + 12]
-   mov edx, 10
-   int 0x80
-
-   mov byte [game_states + 1], 0
-
-.handle_player1_input:
-     mov eax, 3
+     mov eax, 4
+     mov ebx, 1
+     mov ecx, newline
      mov edx, 1
-     lea ecx, [player_input]
-     mov edx, 3
      int 0x80
+     jmp .generate_question 
 
-.output_player2_message:
+.player2_turn:
      mov eax, 4
      mov ebx, 1
-     lea ecx, [messages + 48]
-     mov edx, 28
+     lea ecx, [player + 15]
+     mov edx, 15
      int 0x80
 
-_handle_player2_input:
-     mov eax, 3
+     mov eax, 4
+     mov ebx, 1
+     mov ecx, newline
      mov edx, 1
-     lea ecx, [player_input + 1]
-     mov edx, 3
-     int 0x80 
+     int 0x80
 
-.output_input:
+.generate_question:
+     xor byte [output_question], 1
+     cmp byte [output_question], 0 
+     je .question2 
+
+.question1:
      mov eax, 4
      mov ebx, 1
-     lea ecx, [player_input]
-     mov edx, 3
-     int 0x80 
+     lea ecx, [questions]
+     mov edx, 31
+     int 0x80
+
+     mov eax, 4
+     mov ebx, 1
+     mov ecx, newline 
+     mov edx, 1
+     int 0x80
+
+     cmp byte [game_states], 0
+     je .handle_input_player1 
+    
+.question2:
+     mov eax, 4
+     mov ebx, 1
+     lea ecx, [questions + 31]
+     mov edx, 37
+     int 0x80
+
+     mov eax, 4
+     mov ebx, 1
+     mov ecx, newline 
+     mov edx, 1
+     int 0x80
      
-     mov eax, 4
+     cmp byte [game_states], 0
+     jz .handle_input_player1
+
+.handle_input_player1:
+     mov eax, 3
      mov ebx, 1
-     lea ecx, [player_input + 1]
-     mov edx, 3
+     mov ecx, [player + 32]
+     mov edx, 13
+     int 0x80 
+     jmp .generate_turn 
+
+.handle_input_player2:
+     mov eax, 3
+     mov ebx, 1
+     mov ecx, [player + 45]
+     mov edx, 13
      int 0x80
+     jmp .generate_turn 
 
 .exit:
      mov eax, 1
      xor edx, edx 
-     int 0x80 
+     int 0x80
