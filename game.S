@@ -27,8 +27,11 @@ _start:
      ; 1 XOR 1 = 0
      ; 0 XOR 1 = 1
      xor byte [game_states], 1 
-     cmp byte [game_states], 1
-     jz .player2_turn
+     test byte [game_states], byte [game_states]
+     jz .player2_turn 
+     ; This operation tells the CPU to set the address game_state's value to the opposite bit and if it's zero to
+     ; Goto the function .player2_turn
+     ; In simple terms, this is just figures out who's turn it is
 
 .player1_turn:
      mov eax, 4
@@ -59,9 +62,9 @@ _start:
 
 .generate_question:
      xor byte [output_question], 1
-     cmp byte [output_question], 0 
-     je .question2 
-
+     test byte [output_question], byte [output_questions]
+     jz .question2 
+     
 .question1:
      mov eax, 4
      mov ebx, 1
