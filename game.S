@@ -21,7 +21,7 @@ section .data
 
 _start:
     cmp byte [game_states + 1], 1
-    je .exit 
+    je .game_over 
 
 .generate_turn:
      ; 1 XOR 1 = 0
@@ -62,8 +62,8 @@ _start:
 
 .generate_question:
      xor byte [output_question], 1
-     cmp byte [output_question], 1
-     jz .question2 
+     cmp byte [output_question], 0
+     je .question2 
      
 .question1:
      mov eax, 4
@@ -79,8 +79,8 @@ _start:
      int 0x80
 
      cmp byte [game_states], 0
-     jz .handle_input_player1 
-     jnz .handle_input_player2 
+     je .handle_input_player1 
+     jne .handle_input_player2 
      
 .question2:
      mov eax, 4
@@ -113,6 +113,10 @@ _start:
      mov edx, 13
      int 0x80
      jmp .generate_turn 
+
+.game_over:
+     not byte [game_states + 1]
+     jmp .generate_turn
 
 .exit:
      mov eax, 1
