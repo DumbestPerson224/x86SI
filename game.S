@@ -78,9 +78,10 @@ _start:
      mov edx, 1
      int 0x80
 
-     cmp byte [game_states], 0
-     je .handle_input_player1 
-    
+     test byte [game_states], byte [game_states]
+     jz .handle_input_player1 
+     jnz .handle_input_player2 
+     
 .question2:
      mov eax, 4
      mov ebx, 1
@@ -94,8 +95,8 @@ _start:
      mov edx, 1
      int 0x80
      
-     cmp byte [game_states], 0
-     jz .handle_input_player1
+     test byte [game_states], byte [game_states]
+     jnz .handle_input_player2 
 
 .handle_input_player1:
      mov eax, 3
