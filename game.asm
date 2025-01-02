@@ -29,8 +29,8 @@ output_statistics_loop:
   jmp statistics_loop
 
 done_statistics_loop:
-   pop ax 
-   pop cx 
+   pop cx
+   pop ax
 
 game_loop:
  jmp game_loop
@@ -64,5 +64,5 @@ game_over_loop_output:
   jmp game_over_loop
   
 done_game_over_loop:
-  pop ax  
-  pop cx 
+  pop cx
+  pop ax
