@@ -5,8 +5,8 @@ section .data
      player:
           db "Player 1's turn"
           db "Player 2's turn"
-          db "" ; Player 1 input
-          db "" ; Player 2 input
+          times 13 db "" ; Player 1 input
+          times 13 db "" ; Player 2 input
 
      game_states:
           db 1    ; Player's turn
