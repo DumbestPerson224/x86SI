@@ -61,7 +61,7 @@ _start:
      int 0x80
 
 .generate_question:
-     xor byte [output_question], 1
+     not byte [output_question]
      cmp byte [output_question], 0
      je .question2 
      
