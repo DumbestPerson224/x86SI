@@ -24,9 +24,7 @@ _start:
     je .game_over 
 
 .generate_turn:
-     ; 1 XOR 1 = 0
-     ; 0 XOR 1 = 1
-     xor byte [game_states], 1 
+     not byte [game_states]
      cmp byte [game_states], 1
      jz .player2_turn 
      ; This operation tells the CPU to set the address game_state's value to the opposite bit and if it's zero to
