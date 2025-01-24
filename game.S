@@ -93,8 +93,8 @@ _start:
      mov edx, 1
      int 0x80
      
-     cmp byte [game_states], 0
-     jnz .handle_input_player2 
+     cmp byte [game_states], 1
+     je .handle_input_player2 
 
 .handle_input_player1:
      mov eax, 3
