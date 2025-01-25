@@ -1,3 +1,4 @@
+; New:
 section .text 
   global _start 
 
@@ -21,17 +22,17 @@ section .data
 
 _start:
     cmp byte [game_states + 1], 1
-    je .game_over 
+    je game_over 
 
-.generate_turn:
+generate_turn:
      not byte [game_states]
-     cmp byte [game_states], 1
-     jz .player2_turn 
+     cmp byte [game_states], 0
+     je player2_turn 
      ; This operation tells the CPU to set the address game_state's value to the opposite bit and if it's zero to
-     ; Goto the function .player2_turn
+     ; Goto the function player2_turn
      ; In simple terms, this is just figures out who's turn it is
 
-.player1_turn:
+player1_turn:
      mov eax, 4
      mov ebx, 1
      lea ecx, [player]
@@ -43,9 +44,9 @@ _start:
      mov ecx, newline
      mov edx, 1
      int 0x80
-     jmp .generate_question 
-
-.player2_turn:
+     jmp generate_question 
+     
+player2_turn:
      mov eax, 4
      mov ebx, 1
      lea ecx, [player + 15]
@@ -58,12 +59,12 @@ _start:
      mov edx, 1
      int 0x80
 
-.generate_question:
+generate_question:
      not byte [output_question]
-     cmp byte [output_question], 0
-     je .question2 
+     cmp byte [output_question], 1
+     je question2 
      
-.question1:
+question1:
      mov eax, 4
      mov ebx, 1
      lea ecx, [questions]
@@ -76,11 +77,11 @@ _start:
      mov edx, 1
      int 0x80
 
-     cmp byte [game_states], 0
-     je .handle_input_player1 
-     jne .handle_input_player2 
-     
-.question2:
+     cmp byte [game_states], 1
+     je handle_input_player2
+     jmp handle_input_player1
+
+question2:
      mov eax, 4
      mov ebx, 1
      lea ecx, [questions + 31]
@@ -94,29 +95,29 @@ _start:
      int 0x80
      
      cmp byte [game_states], 1
-     je .handle_input_player2 
+     je handle_input_player2 
 
-.handle_input_player1:
+handle_input_player1:
      mov eax, 3
      mov ebx, 1
      mov ecx, [player + 32]
      mov edx, 13
      int 0x80 
-     jmp .generate_turn 
+     jmp generate_turn 
 
-.handle_input_player2:
+handle_input_player2:
      mov eax, 3
      mov ebx, 1
      mov ecx, [player + 45]
      mov edx, 13
      int 0x80
-     jmp .generate_turn 
+     jmp generate_turn 
 
-.game_over:
+game_over:
      not byte [game_states + 1]
-     jmp .generate_turn
+     jmp generate_turn
 
-.exit:
+exit:
      mov eax, 1
-     xor edx, edx 
+     xor ebx, ebx 
      int 0x80
